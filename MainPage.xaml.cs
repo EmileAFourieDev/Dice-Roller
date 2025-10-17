@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.Text;
+using System.Text.Json;
 
 namespace Dice_Roller
 {
@@ -19,7 +21,7 @@ namespace Dice_Roller
             RollDice();
         }
 
-        private void RollDice()
+        private async void RollDice()
         {
             int roll1 = random.Next(1, 7);
             int roll2 = random.Next(1, 7);
@@ -38,6 +40,29 @@ namespace Dice_Roller
             // Limit history length
             if (rollHistory.Count > 20)
                 rollHistory.RemoveAt(rollHistory.Count - 1);
+
+
+            var rollData = new
+            {
+                Roll1 = roll1,
+                Roll2 = roll2,
+                Sum = sum,
+                Timestamp = DateTime.Now
+            };
+
+            var json = JsonSerializer.Serialize(rollData);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using var client = new HttpClient();
+            try
+            {
+                await client.PostAsync("http://192.168.10.177:5045/api/diceroll", content);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending roll to API: {ex.Message}");
+            }
+
         }
 
         protected override void OnAppearing()
