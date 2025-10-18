@@ -56,7 +56,7 @@ namespace Dice_Roller
             using var client = new HttpClient();
             try
             {
-                await client.PostAsync("http://192.168.10.177:5045/api/diceroll", content);
+                await client.PostAsync("http://192.168.10.148:5045/api/diceroll", content);
             }
             catch (Exception ex)
             {
